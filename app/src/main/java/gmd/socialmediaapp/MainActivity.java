@@ -1,6 +1,7 @@
 package gmd.socialmediaapp;
 
 import android.content.Intent;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.MotionEventCompat;
@@ -24,10 +25,18 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,6 +46,7 @@ import co.dift.ui.SwipeToAction;
 public class MainActivity extends AppCompatActivity {
 
     public FirebaseAuth mFirebaseAuth;
+    public FirebaseFirestore mFirestore;
     public static final int RC_SIGN_IN = 1;
     public FirebaseAuth.AuthStateListener mAuthStateListner;
 
@@ -49,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     public RecyclerView.Adapter mAdapter;
 
     private ArrayList<String> mmDataSet = new ArrayList<>();
+    private final ArrayList<Post> posts = new ArrayList<>();
 
     public boolean loginToken = false;
 
@@ -61,36 +72,35 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         mFirebaseAuth = FirebaseAuth.getInstance();
+        mFirestore = FirebaseFirestore.getInstance();
         mAuthStateListner = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    loginToken = true;
-//                    Toast.makeText(MainActivity.this, "User Signed In", Toast.LENGTH_SHORT).show();
-                } else {
-                    startActivityForResult(
-                            AuthUI.getInstance()
-                                    .createSignInIntentBuilder()
-                                    .setIsSmartLockEnabled(false)
-                                    .setAvailableProviders(providers)
-                                    .build(),
-                            RC_SIGN_IN
-                    );
-
-                }
+//                if (user != null) {
+//                    loginToken = true;
+////                    Toast.makeText(MainActivity.this, "User Signed In", Toast.LENGTH_SHORT).show();
+//                } else {
+//                    startActivityForResult(
+//                            AuthUI.getInstance()
+//                                    .createSignInIntentBuilder()
+//                                    .setIsSmartLockEnabled(false)
+//                                    .setAvailableProviders(providers)
+//                                    .build(),
+//                            RC_SIGN_IN
+//                    );
+//
+//                }
             }
         };
-
 
 //        if (loginToken) {
         Toast.makeText(MainActivity.this, "Activity Start", Toast.LENGTH_SHORT).show();
 //        }
 
-
-        for (int i = 0; i < 10; i++) {
+        getAllPosts();
+        for (int i = 0; i < 4; i++) {
             mmDataSet.add("new title # " + i);
         }
 
@@ -101,9 +111,14 @@ public class MainActivity extends AppCompatActivity {
         mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mAdapter = new MainAdapter(mmDataSet);
-        mRecyclerView.setAdapter(mAdapter);
-
+        //delay to load data, neviem to inak sorry chalani
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                mAdapter = new MainAdapter(MainActivity.this, mmDataSet, posts);
+                mRecyclerView.setAdapter(mAdapter);
+            }
+        }, 5000);
 
         SwipeToAction swipeToAction = new SwipeToAction(mRecyclerView, new SwipeToAction.SwipeListener() {
             @Override
@@ -249,4 +264,40 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, UserData.class);
         startActivity(intent);
     }
+
+    public void addPost(Post post) {
+        mFirestore.collection("posts")
+                .add(post)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        //TODO added successfully
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        //TODO failed to add
+                    }
+                });
+    }
+
+    public  void getAllPosts() {
+        mFirestore.collection("posts")
+                .orderBy("date", Query.Direction.DESCENDING)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public synchronized void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                posts.add(document.toObject(Post.class));
+                            }
+                        } else {
+                            //TODO failed to load data
+                        }
+                    }
+                });
+    }
+
 }
