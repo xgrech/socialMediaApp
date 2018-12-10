@@ -28,6 +28,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -58,8 +59,8 @@ public class MainActivity extends AppCompatActivity {
     public RecyclerView.LayoutManager mLayoutManager;
     public RecyclerView.Adapter mAdapter;
 
-    private ArrayList<String> mmDataSet = new ArrayList<>();
     private final ArrayList<Post> posts = new ArrayList<>();
+    private final  List<User> users = new ArrayList<>();
 
     public boolean loginToken = false;
 
@@ -99,10 +100,9 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(MainActivity.this, "Activity Start", Toast.LENGTH_SHORT).show();
 //        }
 
+        //load all data
         getAllPosts();
-        for (int i = 0; i < 4; i++) {
-            mmDataSet.add("new title # " + i);
-        }
+        getAllUsers();
 
         profile_view = findViewById(R.id.profile_layout);
         mRecyclerView = findViewById(R.id.recycleView);
@@ -115,7 +115,8 @@ public class MainActivity extends AppCompatActivity {
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             public void run() {
-                mAdapter = new MainAdapter(MainActivity.this, mmDataSet, posts);
+//                register(mFirebaseAuth.getCurrentUser().getEmail());
+                mAdapter = new MainAdapter(MainActivity.this, posts);
                 mRecyclerView.setAdapter(mAdapter);
             }
         }, 5000);
@@ -300,4 +301,86 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    public void addUser() {
+        User user = new User(mFirebaseAuth.getCurrentUser().getEmail(),Timestamp.now(),0);
+        mFirestore.collection("users")
+                .document(mFirebaseAuth.getCurrentUser().getUid())
+                .set(user)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        //TODO user added message
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        //TODO
+                    }
+                });
+    }
+
+    public void register(String userName){
+        boolean exists = false;
+        for(User user : users){
+            if(userName.equals(user.getUsername())){
+                exists = true;
+            }
+        }
+        if(!exists){
+            addUser();
+        }
+    }
+
+    public ArrayList<Post> getUserPosts(String userId){
+        ArrayList<Post> userPosts = new ArrayList<>();
+        for(Post post : posts){
+            userPosts.add(post);
+        }
+        return userPosts;
+    }
+
+    public User getUserProfile(String name){
+        for(User user : users){
+            if(name.equals(user.getUsername())){
+                return user;
+            }
+        }
+        //empty user
+        return new User();
+    }
+
+    public void updateUserInsertCount(String userId){
+        mFirestore.collection("users").document(userId).update("numberOfPosts", getCurrentUserPostCount(userId)+1);
+    }
+
+    public int getCurrentUserPostCount(String userId){
+        int count = 0;
+        for(Post post : posts){
+            if(userId.equals(post.getUserid())){
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public void getAllUsers() {
+        mFirestore.collection("users")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                User user = document.toObject(User.class);
+                                users.add(user);
+                            }
+                        } else {
+                            //TODO failed to load users message?
+                        }
+                    }
+
+                });
+    }
 }
+

@@ -30,13 +30,11 @@ import co.dift.ui.SwipeToAction;
 class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
 
     private Context context;
-    private ArrayList<String> mDataSet;
     private ArrayList<Post> mPostSet;
     private SimpleExoPlayer player;
 
-    public MainAdapter(Context context, ArrayList<String> mDataSet, ArrayList<Post> mPostSet) {
+    public MainAdapter(Context context, ArrayList<Post> mPostSet) {
         this.context = context;
-        this.mDataSet = mDataSet;
         this.mPostSet = mPostSet;
     }
 
@@ -51,7 +49,7 @@ class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.mTitle.setText(mDataSet.get(position));
+        holder.mTitle.setText(mPostSet.get(position).getUsername());
 
         if(!mPostSet.get(position).getImageurl().isEmpty()) {
             holder.mView.setVisibility(View.VISIBLE);
@@ -83,7 +81,7 @@ class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return mDataSet.size();
+        return mPostSet.size();
     }
 
 
