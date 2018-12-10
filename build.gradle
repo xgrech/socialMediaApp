@@ -3,12 +3,13 @@
 buildscript {
     
     repositories {
-        google()
         jcenter()
+        google()
         // Firebase Crashlytics
         maven {
             url 'https://maven.fabric.io/public'
         }
+        maven { url 'https://google.bintray.com/exoplayer' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.2.0'
@@ -32,6 +33,7 @@ allprojects {
         maven {
             url 'https://maven.google.com/'
         }
+        maven { url 'https://google.bintray.com/exoplayer' }
     }
 }
 

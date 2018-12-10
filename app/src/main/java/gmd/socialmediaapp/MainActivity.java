@@ -20,6 +20,7 @@ import android.view.animation.LayoutAnimationController;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
@@ -48,11 +49,9 @@ public class MainActivity extends AppCompatActivity {
 
     public FirebaseAuth mFirebaseAuth;
     public FirebaseFirestore mFirestore;
-    public static final int RC_SIGN_IN = 1;
     public FirebaseAuth.AuthStateListener mAuthStateListner;
 
-    List<AuthUI.IdpConfig> providers = Arrays.asList(
-            new AuthUI.IdpConfig.EmailBuilder().build());
+    TextView profileText;
 
 
     public RecyclerView mRecyclerView;
@@ -60,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
     public RecyclerView.Adapter mAdapter;
 
     private final ArrayList<Post> posts = new ArrayList<>();
-    private final  List<User> users = new ArrayList<>();
+    private final List<User> users = new ArrayList<>();
 
     public boolean loginToken = false;
 
@@ -75,30 +74,28 @@ public class MainActivity extends AppCompatActivity {
 
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirestore = FirebaseFirestore.getInstance();
+
         mAuthStateListner = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-//                if (user != null) {
-//                    loginToken = true;
-////                    Toast.makeText(MainActivity.this, "User Signed In", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    startActivityForResult(
-//                            AuthUI.getInstance()
-//                                    .createSignInIntentBuilder()
-//                                    .setIsSmartLockEnabled(false)
-//                                    .setAvailableProviders(providers)
-//                                    .build(),
-//                            RC_SIGN_IN
-//                    );
-//
-//                }
+                if (user != null) {
+                    Toast.makeText(MainActivity.this, "nevieme nastavit? Start", Toast.LENGTH_SHORT).show();
+
+                    loginToken = true;
+                } else {
+                    openLoginScreen();
+                }
             }
         };
 
+
+        profileText = findViewById(R.id.profileTitle);
+        profileText.setText(loginToken + "");
+
+        gestureObject = new GestureDetectorCompat(this, new LearnGesture());
+
 //        if (loginToken) {
-        Toast.makeText(MainActivity.this, "Activity Start", Toast.LENGTH_SHORT).show();
-//        }
 
         //load all data
         getAllPosts();
@@ -124,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
         SwipeToAction swipeToAction = new SwipeToAction(mRecyclerView, new SwipeToAction.SwipeListener() {
             @Override
             public boolean swipeLeft(Object itemData) {
+
                 return false;
             }
 
@@ -158,8 +156,8 @@ public class MainActivity extends AppCompatActivity {
                     v.setVisibility(View.GONE);
             }
         });
+//        }
     }
-
 
     @Override
     protected void onResume() {
@@ -266,6 +264,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void openLoginScreen() {
+        Intent intent = new Intent(this, StartActivity.class);
+        startActivity(intent);
+    }
+
     public void addPost(Post post) {
         mFirestore.collection("posts")
                 .add(post)
@@ -283,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    public  void getAllPosts() {
+    public void getAllPosts() {
         mFirestore.collection("posts")
                 .orderBy("date", Query.Direction.DESCENDING)
                 .get()
@@ -302,7 +305,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void addUser() {
-        User user = new User(mFirebaseAuth.getCurrentUser().getEmail(),Timestamp.now(),0);
+        User user = new User(mFirebaseAuth.getCurrentUser().getEmail(), Timestamp.now(), 0);
         mFirestore.collection("users")
                 .document(mFirebaseAuth.getCurrentUser().getUid())
                 .set(user)
@@ -320,29 +323,29 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    public void register(String userName){
+    public void register(String userName) {
         boolean exists = false;
-        for(User user : users){
-            if(userName.equals(user.getUsername())){
+        for (User user : users) {
+            if (userName.equals(user.getUsername())) {
                 exists = true;
             }
         }
-        if(!exists){
+        if (!exists) {
             addUser();
         }
     }
 
-    public ArrayList<Post> getUserPosts(String userId){
+    public ArrayList<Post> getUserPosts(String userId) {
         ArrayList<Post> userPosts = new ArrayList<>();
-        for(Post post : posts){
+        for (Post post : posts) {
             userPosts.add(post);
         }
         return userPosts;
     }
 
-    public User getUserProfile(String name){
-        for(User user : users){
-            if(name.equals(user.getUsername())){
+    public User getUserProfile(String name) {
+        for (User user : users) {
+            if (name.equals(user.getUsername())) {
                 return user;
             }
         }
@@ -350,14 +353,14 @@ public class MainActivity extends AppCompatActivity {
         return new User();
     }
 
-    public void updateUserInsertCount(String userId){
-        mFirestore.collection("users").document(userId).update("numberOfPosts", getCurrentUserPostCount(userId)+1);
+    public void updateUserInsertCount(String userId) {
+        mFirestore.collection("users").document(userId).update("numberOfPosts", getCurrentUserPostCount(userId) + 1);
     }
 
-    public int getCurrentUserPostCount(String userId){
+    public int getCurrentUserPostCount(String userId) {
         int count = 0;
-        for(Post post : posts){
-            if(userId.equals(post.getUserid())){
+        for (Post post : posts) {
+            if (userId.equals(post.getUserid())) {
                 count++;
             }
         }

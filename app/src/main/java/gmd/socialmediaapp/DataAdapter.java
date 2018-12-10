@@ -34,7 +34,7 @@ class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
     @Override
     public DataAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.horizontal_item, parent, false);
+                .inflate(R.layout.revertical_item, parent, false);
         DataAdapter.ViewHolder vh = new DataAdapter.ViewHolder(v);
         return vh;
     }
