@@ -265,6 +265,8 @@ public class MainActivity extends AppCompatActivity {
     public void openUserData() {
         Intent intent = new Intent(this, UserData.class);
         intent.putStringArrayListExtra("links", getUserPostsLinks(posts.get(position).getUserid()));
+        intent.putStringArrayListExtra("dates", getUserPostsDate(posts.get(position).getUserid()));
+        intent.putExtra("username",posts.get(position).getUsername());
         startActivity(intent);
     }
 
@@ -327,6 +329,17 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return userPosts;
+    }
+
+    public ArrayList<String> getUserPostsDate(String userId){
+        ArrayList<String> userPostsDate = new ArrayList<>();
+        for (Post post : posts) {
+            if(userId.equals(post.getUserid()))
+            {
+                userPostsDate.add(post.getDate().toString());
+            }
+        }
+        return userPostsDate;
     }
 
     public ArrayList<Post> getUserPosts(String userId) {

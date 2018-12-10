@@ -13,12 +13,14 @@ public class UserData extends AppCompatActivity {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
-    private ArrayList<String> DataSet;
+    private ArrayList<String> LinkSet;
+    private ArrayList<String> DateSet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        DataSet = getIntent().getStringArrayListExtra("links");
+        LinkSet = getIntent().getStringArrayListExtra("links");
+        DateSet = getIntent().getStringArrayListExtra("dates");
         setContentView(R.layout.activity_user_data);
         mRecyclerView = findViewById(R.id.data_recycle_view);
         mRecyclerView.setHasFixedSize(true);
@@ -26,7 +28,7 @@ public class UserData extends AppCompatActivity {
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mAdapter = new DataAdapter(this, DataSet);
+        mAdapter = new DataAdapter(this, LinkSet, DateSet, getIntent().getStringExtra("username"));
         mRecyclerView.setAdapter(mAdapter);
     }
 }

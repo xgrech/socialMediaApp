@@ -29,9 +29,10 @@ import co.dift.ui.SwipeToAction;
 class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
 
     private Context context;
-    private ArrayList<String> mDataSet;
+    private ArrayList<String> LinkSet;
+    private ArrayList<String> DateSet;
     private SimpleExoPlayer player;
-
+    private String username;
 
     public class ViewHolder extends SwipeToAction.ViewHolder {
         public TextView mTitle;
@@ -47,9 +48,11 @@ class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
         }
     }
 
-    public DataAdapter(Context context, ArrayList<String> mDataset) {
+    public DataAdapter(Context context, ArrayList<String> LinkSet, ArrayList<String> DateSet, String username) {
         this.context = context;
-        this.mDataSet = mDataset;
+        this.DateSet = DateSet;
+        this.LinkSet = LinkSet;
+        this.username = username;
     }
 
     @NonNull
@@ -70,19 +73,19 @@ class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-//        viewHolder.mTitle.setText(mDataSet.get(i));
+        holder.mTitle.setText(DateSet.get(position) + " " + username );
 
-        if(!mDataSet.get(position).contains(".mp4")) {
+        if(!LinkSet.get(position).contains(".mp4")) {
             holder.mView.setVisibility(View.VISIBLE);
             holder.mVideoView.setVisibility(View.INVISIBLE);
 
             Picasso.get()
-                    .load(mDataSet.get(position))
+                    .load(LinkSet.get(position))
                     .placeholder(R.drawable.ic_launcher_background)
                     .into(holder.mView);
         }
 
-        else if(mDataSet.get(position).contains(".mp4")){
+        else if(LinkSet.get(position).contains(".mp4")){
             holder.mView.setVisibility(View.INVISIBLE);
             holder.mVideoView.setVisibility(View.VISIBLE);
 
@@ -90,7 +93,7 @@ class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
             holder.mVideoView.setPlayer(player);
             player.setPlayWhenReady(true);
             player.setRepeatMode(Player.REPEAT_MODE_OFF);
-            player.prepare(buildMediaSource( Uri.parse(mDataSet.get(position))));
+            player.prepare(buildMediaSource( Uri.parse(LinkSet.get(position))));
         }
     }
 
@@ -98,6 +101,6 @@ class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return mDataSet.size();
+        return DateSet.size();
     }
 }
