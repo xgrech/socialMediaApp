@@ -13,25 +13,20 @@ public class UserData extends AppCompatActivity {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
-
-    private ArrayList<String> DataSet = new ArrayList<>();
+    private ArrayList<String> DataSet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        DataSet = getIntent().getStringArrayListExtra("links");
         setContentView(R.layout.activity_user_data);
         mRecyclerView = findViewById(R.id.data_recycle_view);
-
-        for (int i = 0; i < 10; i++) {
-            DataSet.add("User title # " + i);
-        }
-
         mRecyclerView.setHasFixedSize(true);
 
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mAdapter = new DataAdapter(DataSet);
+        mAdapter = new DataAdapter(this, DataSet);
         mRecyclerView.setAdapter(mAdapter);
     }
 }

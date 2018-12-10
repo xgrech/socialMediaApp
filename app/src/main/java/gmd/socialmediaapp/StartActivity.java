@@ -1,7 +1,6 @@
 package gmd.socialmediaapp;
 
 import android.content.Intent;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -9,9 +8,11 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class StartActivity extends AppCompatActivity {
 
     public static final int RC_SIGN_IN = 1;
     private Button signIn;
+    private ArrayList<String> names;
 
     List<AuthUI.IdpConfig> providers = Arrays.asList(
             new AuthUI.IdpConfig.EmailBuilder().build());
@@ -29,7 +31,7 @@ public class StartActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
-
+        names = getIntent().getStringArrayListExtra("names");
         signIn = findViewById(R.id.signInButton);
         signIn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,7 +55,9 @@ public class StartActivity extends AppCompatActivity {
                 Toast.makeText(this, "Sign in canceled", Toast.LENGTH_SHORT).show();
                 finish();
             }
-        }}
+        }
+        register(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+    }
 
     public void login() {
         startActivityForResult(
@@ -69,5 +73,26 @@ public class StartActivity extends AppCompatActivity {
     public void openApp() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
+    }
+
+    public void addUser() {
+        User user = new User(FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), Timestamp.now(), 0);
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .set(user);
+    }
+
+    public void register(String userName) {
+        boolean exists = false;
+
+        for (String name : names) {
+            if (userName.equals(name)) {
+                exists = true;
+            }
+        }
+        if (!exists) {
+            addUser();
+        }
     }
 }

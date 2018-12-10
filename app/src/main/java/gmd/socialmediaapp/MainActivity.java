@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
     public GestureDetectorCompat gestureObject;
 
     public LinearLayout profile_view;
+    public int position;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,13 +76,22 @@ public class MainActivity extends AppCompatActivity {
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirestore = FirebaseFirestore.getInstance();
 
+        getAllPosts();
+        getAllUsers();
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+
+            }
+        }, 5000);
+
         mAuthStateListner = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     Toast.makeText(MainActivity.this, "nevieme nastavit? Start", Toast.LENGTH_SHORT).show();
-
                     loginToken = true;
                 } else {
                     openLoginScreen();
@@ -97,9 +107,6 @@ public class MainActivity extends AppCompatActivity {
 
 //        if (loginToken) {
 
-        //load all data
-        getAllPosts();
-        getAllUsers();
 
         profile_view = findViewById(R.id.profile_layout);
         mRecyclerView = findViewById(R.id.recycleView);
@@ -108,11 +115,8 @@ public class MainActivity extends AppCompatActivity {
         mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        //delay to load data, neviem to inak sorry chalani
-        Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             public void run() {
-//                register(mFirebaseAuth.getCurrentUser().getEmail());
                 mAdapter = new MainAdapter(MainActivity.this, posts);
                 mRecyclerView.setAdapter(mAdapter);
             }
@@ -144,7 +148,6 @@ public class MainActivity extends AppCompatActivity {
 
 //        mRecyclerView.smoothScrollToPosition(5);
 //        mRecyclerView.smoothScrollToPosition(5);
-
 
         gestureObject = new GestureDetectorCompat(this, new LearnGesture());
 
@@ -261,11 +264,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void openUserData() {
         Intent intent = new Intent(this, UserData.class);
+        intent.putStringArrayListExtra("links", getUserPostsLinks(posts.get(position).getUserid()));
         startActivity(intent);
     }
 
     public void openLoginScreen() {
         Intent intent = new Intent(this, StartActivity.class);
+        intent.putStringArrayListExtra("names", getAllUserNames());
         startActivity(intent);
     }
 
@@ -304,35 +309,24 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    public void addUser() {
-        User user = new User(mFirebaseAuth.getCurrentUser().getEmail(), Timestamp.now(), 0);
-        mFirestore.collection("users")
-                .document(mFirebaseAuth.getCurrentUser().getUid())
-                .set(user)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        //TODO user added message
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        //TODO
-                    }
-                });
+    public ArrayList<String> getAllUserNames(){
+        ArrayList<String> names = new ArrayList<>();
+        for(User user : users){
+            names.add(user.getUsername());
+        }
+        return names;
     }
 
-    public void register(String userName) {
-        boolean exists = false;
-        for (User user : users) {
-            if (userName.equals(user.getUsername())) {
-                exists = true;
+    public ArrayList<String> getUserPostsLinks(String userId){
+        ArrayList<String> userPosts = new ArrayList<>();
+        for (Post post : posts) {
+            if(userId.equals(post.getUserid()))
+            {
+                if(!post.getVideourl().isEmpty()) userPosts.add(post.getVideourl());
+                else if(!post.getImageurl().isEmpty()) userPosts.add(post.getImageurl());
             }
         }
-        if (!exists) {
-            addUser();
-        }
+        return userPosts;
     }
 
     public ArrayList<Post> getUserPosts(String userId) {

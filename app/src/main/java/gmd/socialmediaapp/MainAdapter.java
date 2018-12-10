@@ -70,7 +70,7 @@ class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
             player = ExoPlayerFactory.newSimpleInstance( new DefaultRenderersFactory(context), new DefaultTrackSelector(),new DefaultLoadControl());
             holder.mVideoView.setPlayer(player);
             player.setPlayWhenReady(true);
-            player.setRepeatMode(Player.REPEAT_MODE_ONE);
+            player.setRepeatMode(Player.REPEAT_MODE_OFF);
             player.prepare(buildMediaSource( Uri.parse(mPostSet.get(position).getVideourl())));
         }
     }
