@@ -67,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
     public GestureDetectorCompat gestureObject;
 
     public LinearLayout profile_view;
+    public int position;
+    private static int RESULT_LOAD_IMG = 1;
 
     private Integer itemPosition;
 
@@ -124,6 +126,13 @@ public class MainActivity extends AppCompatActivity {
         };
 
         mRecyclerView.setLayoutManager(mLayoutManager);
+        Button uploadButton = (Button)findViewById(R.id.upload_button);
+        uploadButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent i = new Intent(v.getContext(), Uploader.class);
+                startActivity(i);
+            }
+        });
 
 
         handler.postDelayed(new Runnable() {

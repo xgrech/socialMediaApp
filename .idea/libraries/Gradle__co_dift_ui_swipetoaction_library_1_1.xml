@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: co.dift.ui.swipetoaction:library-1.1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../helloWorld/gradle/gradle-3.3/caches/transforms-1/files-1.1/library-1.1.aar/3a8a2a1f901da945fc679aed3c074161/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../helloWorld/gradle/gradle-3.3/caches/transforms-1/files-1.1/library-1.1.aar/3a8a2a1f901da945fc679aed3c074161/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../helloWorld/gradle/gradle-3.3/caches/modules-2/files-2.1/co.dift.ui.swipetoaction/library/1.1/ebcb4799087f2d201ce03fa25280908eb9d07d8/library-1.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
