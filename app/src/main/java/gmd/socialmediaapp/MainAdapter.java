@@ -34,6 +34,8 @@ class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
     private ArrayList<Post> mPostSet;
     private SimpleExoPlayer player;
 
+
+
     public MainAdapter(Context context, ArrayList<Post> mPostSet) {
         this.context = context;
         this.mPostSet = mPostSet;

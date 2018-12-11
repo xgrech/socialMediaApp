@@ -30,5 +30,6 @@ public class UserData extends AppCompatActivity {
 
         mAdapter = new DataAdapter(this, LinkSet, DateSet, getIntent().getStringExtra("username"));
         mRecyclerView.setAdapter(mAdapter);
+
     }
 }

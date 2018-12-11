@@ -1,5 +1,6 @@
 package gmd.socialmediaapp;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -68,6 +69,9 @@ public class MainActivity extends AppCompatActivity {
     public LinearLayout profile_view;
     public int position;
 
+    private Integer itemPosition;
+
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,29 +95,38 @@ public class MainActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    Toast.makeText(MainActivity.this, "nevieme nastavit? Start", Toast.LENGTH_SHORT).show();
-                    loginToken = true;
+                    Toast.makeText(MainActivity.this, "Welcome", Toast.LENGTH_SHORT).show();
                 } else {
                     openLoginScreen();
                 }
             }
         };
 
+        itemPosition = 0;
 
         profileText = findViewById(R.id.profileTitle);
         profileText.setText(loginToken + "");
 
-        gestureObject = new GestureDetectorCompat(this, new LearnGesture());
-
-//        if (loginToken) {
-
-
         profile_view = findViewById(R.id.profile_layout);
         mRecyclerView = findViewById(R.id.recycleView);
         mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setNestedScrollingEnabled(false);
 
-        mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false) {
+            @Override
+            public boolean canScrollHorizontally() {
+//                return false;
+                return true;
+            }
+
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        };
+
         mRecyclerView.setLayoutManager(mLayoutManager);
+
 
         handler.postDelayed(new Runnable() {
             public void run() {
@@ -121,33 +134,6 @@ public class MainActivity extends AppCompatActivity {
                 mRecyclerView.setAdapter(mAdapter);
             }
         }, 5000);
-
-        SwipeToAction swipeToAction = new SwipeToAction(mRecyclerView, new SwipeToAction.SwipeListener() {
-            @Override
-            public boolean swipeLeft(Object itemData) {
-
-                return false;
-            }
-
-            @Override
-            public boolean swipeRight(Object itemData) {
-                return false;
-            }
-
-            @Override
-            public void onClick(Object itemData) {
-                openUserData();
-            }
-
-            @Override
-            public void onLongClick(Object itemData) {
-
-            }
-
-        });
-
-//        mRecyclerView.smoothScrollToPosition(5);
-//        mRecyclerView.smoothScrollToPosition(5);
 
         gestureObject = new GestureDetectorCompat(this, new LearnGesture());
 
@@ -159,7 +145,33 @@ public class MainActivity extends AppCompatActivity {
                     v.setVisibility(View.GONE);
             }
         });
-//        }
+
+        mRecyclerView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                gestureObject.onTouchEvent(event);
+
+                return false;
+            }
+        });
+
+        mRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+            @Override
+            public boolean onInterceptTouchEvent(@NonNull RecyclerView recyclerView, @NonNull MotionEvent motionEvent) {
+                return true;
+            }
+
+            @Override
+            public void onTouchEvent(@NonNull RecyclerView recyclerView, @NonNull MotionEvent motionEvent) {
+
+            }
+
+            @Override
+            public void onRequestDisallowInterceptTouchEvent(boolean b) {
+
+            }
+        });
+
     }
 
     @Override
@@ -175,31 +187,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-//    LinearLayout profile_view = findViewById(R.id.profile_layout);
-//    setLayoutAnimation_slideDown(profile_view);
-//
-//    int action = MotionEventCompat.getActionMasked(event);
-//
-//        switch (action) {
-//            case (MotionEvent.ACTION_UP): {
-//                Toast.makeText(MainActivity.this, "Profile Start", Toast.LENGTH_SHORT).show();
-//
-//                int visibility = profile_view.getVisibility();
-//                if (visibility == View.GONE)
-//                    profile_view.setVisibility(View.VISIBLE);
-//            }
-
-//            case (MotionEvent.ACTION_UP): {
-//                int visibility = profile_view.getVisibility();
-//                if (visibility == View.VISIBLE)
-//                    profile_view.setVisibility(View.GONE);
-//    }
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         this.gestureObject.onTouchEvent(event);
         return super.onTouchEvent(event);
     }
+
 
     class LearnGesture extends GestureDetector.SimpleOnGestureListener {
 
@@ -207,11 +200,29 @@ public class MainActivity extends AppCompatActivity {
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 
             setLayoutAnimation_slideDown(profile_view);
-
-            if (e1.getY() < e2.getY()) {
+            if ((e1.getY() < e2.getY()) && (e2.getY() - e1.getY() > 100)) {
                 int visibility = profile_view.getVisibility();
                 if (visibility == View.GONE)
                     profile_view.setVisibility(View.VISIBLE);
+            }
+
+            if ((e2.getX() < e1.getX()) && (e1.getX() - e2.getX() > 100)) {
+                mRecyclerView.smoothScrollToPosition(itemPosition + 1);
+                itemPosition = itemPosition + 1;
+                Toast.makeText(MainActivity.this, itemPosition.toString(), Toast.LENGTH_SHORT).show();
+            }
+
+            if ((e1.getX() < e2.getX()) && (e2.getX() - e1.getX() > 100)) {
+                if (itemPosition != 0) {
+                    mRecyclerView.smoothScrollToPosition(itemPosition - 1);
+                    itemPosition = itemPosition - 1;
+                    Toast.makeText(MainActivity.this, itemPosition.toString(), Toast.LENGTH_SHORT).show();
+
+                }
+            }
+
+            if ((e2.getY() < e1.getY()) && (e1.getY() - e2.getY() > 100)) {
+                openUserData();
             }
 
             return super.onFling(e1, e2, velocityX, velocityY);
@@ -266,7 +277,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, UserData.class);
         intent.putStringArrayListExtra("links", getUserPostsLinks(posts.get(position).getUserid()));
         intent.putStringArrayListExtra("dates", getUserPostsDate(posts.get(position).getUserid()));
-        intent.putExtra("username",posts.get(position).getUsername());
+        intent.putExtra("username", posts.get(position).getUsername());
         startActivity(intent);
     }
 
@@ -311,31 +322,29 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    public ArrayList<String> getAllUserNames(){
+    public ArrayList<String> getAllUserNames() {
         ArrayList<String> names = new ArrayList<>();
-        for(User user : users){
+        for (User user : users) {
             names.add(user.getUsername());
         }
         return names;
     }
 
-    public ArrayList<String> getUserPostsLinks(String userId){
+    public ArrayList<String> getUserPostsLinks(String userId) {
         ArrayList<String> userPosts = new ArrayList<>();
         for (Post post : posts) {
-            if(userId.equals(post.getUserid()))
-            {
-                if(!post.getVideourl().isEmpty()) userPosts.add(post.getVideourl());
-                else if(!post.getImageurl().isEmpty()) userPosts.add(post.getImageurl());
+            if (userId.equals(post.getUserid())) {
+                if (!post.getVideourl().isEmpty()) userPosts.add(post.getVideourl());
+                else if (!post.getImageurl().isEmpty()) userPosts.add(post.getImageurl());
             }
         }
         return userPosts;
     }
 
-    public ArrayList<String> getUserPostsDate(String userId){
+    public ArrayList<String> getUserPostsDate(String userId) {
         ArrayList<String> userPostsDate = new ArrayList<>();
         for (Post post : posts) {
-            if(userId.equals(post.getUserid()))
-            {
+            if (userId.equals(post.getUserid())) {
                 userPostsDate.add(post.getDate().toString());
             }
         }

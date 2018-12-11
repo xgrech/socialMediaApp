@@ -7,23 +7,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="12dp"
-
+    android:background="@color/dark_blue"
 
     >
     <TextView
         android:id="@+id/mainTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/browser_actions_bg_grey"
+        android:background="@color/dark_blue"
         />
 
     <ImageView
+        android:background="@color/dark_blue"
         android:id="@+id/imageView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         />
 
     <com.google.android.exoplayer2.ui.PlayerView
+        android:background="@color/dark_blue"
+
         android:id="@+id/videoView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
