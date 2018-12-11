@@ -67,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
     public GestureDetectorCompat gestureObject;
 
     public LinearLayout profile_view;
-    public int position;
 
     private Integer itemPosition;
 
@@ -110,12 +109,11 @@ public class MainActivity extends AppCompatActivity {
         profile_view = findViewById(R.id.profile_layout);
         mRecyclerView = findViewById(R.id.recycleView);
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setNestedScrollingEnabled(false);
+//        mRecyclerView.setNestedScrollingEnabled(false);
 
         mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false) {
             @Override
             public boolean canScrollHorizontally() {
-//                return false;
                 return true;
             }
 
@@ -150,7 +148,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 gestureObject.onTouchEvent(event);
-
                 return false;
             }
         });
@@ -275,9 +272,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void openUserData() {
         Intent intent = new Intent(this, UserData.class);
-        intent.putStringArrayListExtra("links", getUserPostsLinks(posts.get(position).getUserid()));
-        intent.putStringArrayListExtra("dates", getUserPostsDate(posts.get(position).getUserid()));
-        intent.putExtra("username", posts.get(position).getUsername());
+        intent.putStringArrayListExtra("links", getUserPostsLinks(posts.get(itemPosition).getUserid()));
+        intent.putStringArrayListExtra("dates", getUserPostsDate(posts.get(itemPosition).getUserid()));
+        intent.putExtra("username", posts.get(itemPosition).getUsername());
         startActivity(intent);
     }
 
