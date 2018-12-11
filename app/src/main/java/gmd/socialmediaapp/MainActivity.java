@@ -39,6 +39,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.SimpleDateFormat;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,8 +54,9 @@ public class MainActivity extends AppCompatActivity {
     public FirebaseAuth.AuthStateListener mAuthStateListner;
 
     TextView profileText;
-
-
+	TextView profileDate;
+    TextView profileCount;
+    
     public RecyclerView mRecyclerView;
     public RecyclerView.LayoutManager mLayoutManager;
     public RecyclerView.Adapter mAdapter;
@@ -66,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
     public GestureDetectorCompat gestureObject;
 
-    public LinearLayout profile_view;
+    public ConstraintLayout profile_view;
     public int position;
     private static int RESULT_LOAD_IMG = 1;
 
@@ -85,11 +87,7 @@ public class MainActivity extends AppCompatActivity {
         getAllUsers();
 
         Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            public void run() {
-
-            }
-        }, 5000);
+        handler.postDelayed(new Runnable() {public void run() {}}, 5000);
 
         mAuthStateListner = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -104,9 +102,6 @@ public class MainActivity extends AppCompatActivity {
         };
 
         itemPosition = 0;
-
-        profileText = findViewById(R.id.profileTitle);
-        profileText.setText(loginToken + "");
 
         profile_view = findViewById(R.id.profile_layout);
         mRecyclerView = findViewById(R.id.recycleView);
@@ -231,6 +226,14 @@ public class MainActivity extends AppCompatActivity {
                 openUserData();
             }
 
+            User userProfile = getUserProfile(posts.get(itemPosition).getUsername());
+            profileText = findViewById(R.id.profilName);
+            profileText.setText(userProfile.getUsername());
+            profileDate = findViewById(R.id.profilDate);
+            profileDate.setText(getPrettyDate(userProfile.getDate()));
+            profileCount = findViewById(R.id.profilPostCount);
+            profileCount.setText(String.valueOf(userProfile.getNumberOfPosts()));
+            
             return super.onFling(e1, e2, velocityX, velocityY);
         }
     }
@@ -351,7 +354,7 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<String> userPostsDate = new ArrayList<>();
         for (Post post : posts) {
             if (userId.equals(post.getUserid())) {
-                userPostsDate.add(post.getDate().toString());
+                userPostsDate.add(getPrettyDate(post.getDate()));
             }
         }
         return userPostsDate;
@@ -407,5 +410,10 @@ public class MainActivity extends AppCompatActivity {
 
                 });
     }
+    
+    public String getPrettyDate(Timestamp timestamp){		
+	        SimpleDateFormat sfd = new SimpleDateFormat("dd-MM-yyyy HH:mm");		
+	        return sfd.format(timestamp.toDate());		
+	    }
 }
 
