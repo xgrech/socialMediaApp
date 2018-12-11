@@ -1,5 +1,7 @@
 package gmd.socialmediaapp;
 
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -17,6 +19,7 @@ import android.widget.VideoView;
 public class Uploader extends AppCompatActivity {
 
     private static int RESULT_LOAD_IMG = 1;
+    private static int RESULT_LOAD_VIDEO = 2;
     String imgDecodableString;
     VideoView videoField;
 
@@ -27,11 +30,40 @@ public class Uploader extends AppCompatActivity {
     }
 
     public void loadImagefromGallery(View view) {
-        // Create intent to Open Image applications like Gallery, Google Photos
-        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
-                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        // Start the Intent
-        startActivityForResult(galleryIntent, RESULT_LOAD_IMG);
+        AlertDialog.Builder pictureDialog = new AlertDialog.Builder(this);
+        pictureDialog.setTitle("Select Action");
+        String[] pictureDialogItems = {
+                "Select picture from gallery",
+                "Select video from gallery" };
+        pictureDialog.setItems(pictureDialogItems,
+                new DialogInterface.OnClickListener() {
+                    Intent galleryIntent;
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case 0:
+                                galleryIntent = new Intent(Intent.ACTION_PICK,
+                                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                                // Start the Intent
+                                startActivityForResult(galleryIntent, RESULT_LOAD_IMG);
+                                break;
+                            case 1:
+                                galleryIntent = new Intent(Intent.ACTION_PICK,
+                                        android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
+
+                                startActivityForResult(galleryIntent, RESULT_LOAD_VIDEO);
+                                break;
+                        }
+                    }
+                });
+        pictureDialog.show();
+    }
+
+    void buttonToogle() {
+        Button loadButton = (Button) findViewById(R.id.buttonLoadPicture);
+        loadButton.setVisibility(View.GONE);
+        Button uploadButton = (Button) findViewById(R.id.uploadPictureButton);
+        uploadButton.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -39,7 +71,7 @@ public class Uploader extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         try {
             // When an Image is picked
-            if (requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK
+            if ((requestCode == RESULT_LOAD_IMG || requestCode == RESULT_LOAD_VIDEO)  && resultCode == RESULT_OK
                     && null != data) {
                 // Get the Image from data
 
@@ -56,7 +88,6 @@ public class Uploader extends AppCompatActivity {
                 int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
                 imgDecodableString = cursor.getString(columnIndex);
                 String fileType = imgDecodableString.substring(imgDecodableString.lastIndexOf("."));
-
                 if(fileType.equals(".jpg") || fileType.equals(".jpeg") || fileType.equals("png")) {
                     cursor.close();
                     ImageView imgView = (ImageView) findViewById(R.id.imgView);
@@ -65,13 +96,17 @@ public class Uploader extends AppCompatActivity {
                             .decodeFile(imgDecodableString));
                     Log.v("URL: ", selectedImage.getEncodedPath());
 
-                    Button loadButton = (Button) findViewById(R.id.buttonLoadPicture);
-                    loadButton.setVisibility(View.GONE);
-                    Button uploadButton = (Button) findViewById(R.id.uploadPictureButton);
-                    uploadButton.setVisibility(View.VISIBLE);
+                 buttonToogle();
                 } else if(fileType.equals(".mp4")) {
                     ImageView imgView = (ImageView) findViewById(R.id.imgView);
                     imgView.setVisibility(View.GONE);
+                    VideoView videoView = (VideoView) findViewById(R.id.videoView);
+                    videoView.setVisibility(View.VISIBLE);
+                    Uri video = data.getData();
+                    videoView.setVideoURI(video);
+                    videoView.start();
+                    buttonToogle();
+
                 }
 
             } else {

@@ -25,7 +25,7 @@
         android:layout_gravity="center"
         android:layout_weight="0"
         android:onClick="loadImagefromGallery"
-        android:text="Load Picture" >
+        android:text="Load " >
     </Button>
 
     <Button
@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_weight="0"
-        android:text="Upload picture"
+        android:text="Upload"
         android:visibility="gone"></Button>
 
 </LinearLayout>
