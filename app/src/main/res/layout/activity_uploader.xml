@@ -35,6 +35,7 @@
         android:layout_gravity="center"
         android:layout_weight="0"
         android:text="Upload"
+        android:onClick="postFileToServer"
         android:visibility="gone"></Button>
 
 </LinearLayout>
