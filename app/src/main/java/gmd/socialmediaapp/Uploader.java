@@ -62,7 +62,7 @@ public class Uploader extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_uploader);
         handler = new Handler();
-        this.serverUrl = " http://mobv.mcomputing.eu/upload/v/";
+        this.serverUrl = "http://mobv.mcomputing.eu/upload/v/";
         this.auth = FirebaseAuth.getInstance();
         mFirestore = FirebaseFirestore.getInstance();
 
@@ -101,6 +101,8 @@ public class Uploader extends AppCompatActivity {
     void buttonToogle() {
         Button loadButton = (Button) findViewById(R.id.buttonLoadPicture);
         loadButton.setVisibility(View.GONE);
+        View tetxView = findViewById(R.id.post_upload_button_text);
+        tetxView.setVisibility(View.GONE);
         Button uploadButton = (Button) findViewById(R.id.uploadPictureButton);
         uploadButton.setVisibility(View.VISIBLE);
     }
@@ -132,6 +134,9 @@ public class Uploader extends AppCompatActivity {
                 if(fileType.equals(".jpg") || fileType.equals(".jpeg") || fileType.equals(".png")) {
                     cursor.close();
                     ImageView imgView = (ImageView) findViewById(R.id.imgView);
+                    imgView.setVisibility(View.VISIBLE);
+                    VideoView videoView = (VideoView) findViewById(R.id.videoView);
+                    videoView.setVisibility(View.GONE);
                     // Set the Image in ImageView after decoding the String
                     imgView.setImageBitmap(BitmapFactory
                             .decodeFile(imgDecodableString));
@@ -192,7 +197,7 @@ public class Uploader extends AppCompatActivity {
                             Log.v("This is response:", response);
                             doPostToDb(jObj.getString("message"), type );
                             Button uploadButton = (Button) findViewById(R.id.uploadPictureButton);
-                            uploadButton.setVisibility(View.GONE);
+                            uploadButton.setEnabled(false);
                             Toast.makeText(c, "Upload successfull",
                                     Toast.LENGTH_LONG).show();
 

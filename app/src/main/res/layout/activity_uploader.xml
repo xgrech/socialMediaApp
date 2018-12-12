@@ -1,41 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout android:id="@+id/RelativeLayout01"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ImageView
         android:id="@+id/imgView"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1" >
+        android:layout_weight="1"
+        android:visibility="gone"
+
+        >
     </ImageView>
     <VideoView
         android:id="@+id/videoView"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:visibility="gone">
+        android:visibility="gone"
+        >
     </VideoView>
 
     <Button
         android:id="@+id/buttonLoadPicture"
-        android:layout_width="fill_parent"
+        android:layout_width="255dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_weight="0"
         android:onClick="loadImagefromGallery"
-        android:text="Load " >
-    </Button>
+        android:text="Load "
+        android:layout_centerInParent="true"
+        android:visibility="visible"
+        android:background="@color/dark_blue"
+        android:textColor="@color/white"
+        ></Button>
+
+    <TextView
+        android:id="@+id/post_upload_button_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/buttonLoadPicture"
+        android:layout_alignStart="@+id/buttonLoadPicture"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="-3dp"
+        android:layout_marginTop="19dp"
+        android:layout_marginBottom="221dp"
+        android:text="Tap to Load Data from Your local Machine" />
 
     <Button
         android:id="@+id/uploadPictureButton"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_gravity="center"
         android:layout_weight="0"
-        android:text="Upload"
         android:onClick="postFileToServer"
-        android:visibility="gone"></Button>
+        android:text="Upload"
+        android:background="@color/dark_blue"
+        android:textColor="@color/white"
+        android:visibility="gone"
+        ></Button>
 
-</LinearLayout>
+</RelativeLayout>
