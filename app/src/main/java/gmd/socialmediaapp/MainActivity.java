@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -34,7 +35,9 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -57,8 +60,8 @@ public class MainActivity extends AppCompatActivity {
     public RecyclerView.LayoutManager mLayoutManager;
     public RecyclerView.Adapter mAdapter;
 
-    private final ArrayList<Post> posts = new ArrayList<>();
-    private final List<User> users = new ArrayList<>();
+    private ArrayList<Post> posts = new ArrayList<>();
+    private List<User> users = new ArrayList<>();
 
     public boolean loginToken = false;
 
@@ -87,7 +90,8 @@ public class MainActivity extends AppCompatActivity {
 
         loader = findViewById(R.id.loading);
 
-        getAllPosts();
+//        getAllPosts();
+        getAllPosts1();
         getAllUsers();
 
         Handler handler = new Handler();
@@ -95,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 loader.setVisibility(View.GONE);
             }
-        }, 5000);
+        }, 3000);
 
         mAuthStateListner = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -146,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
                 mAdapter = new MainAdapter(MainActivity.this, posts);
                 mRecyclerView.setAdapter(mAdapter);
             }
-        }, 5000);
+        }, 3000);
 
         gestureObject = new GestureDetectorCompat(this, new LearnGesture());
 
@@ -222,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
                 public void run() {
                     button_view.setVisibility(View.GONE);
                 }
-            }, 2000);
+            }, 3000);
 
             return super.onDoubleTap(e);
         }
@@ -345,6 +349,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getAllPosts() {
+        posts = new ArrayList<>();
         mFirestore.collection("posts")
                 .orderBy("date", Query.Direction.DESCENDING)
                 .get()
@@ -360,6 +365,31 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    public void getAllPosts1() {
+        mFirestore.collection("posts")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            return;
+                        }
+                        getAllUsers();
+                        getAllPosts();
+                        itemPosition++;
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            public void run() {
+                                mAdapter = new MainAdapter(MainActivity.this, posts);
+                                mRecyclerView.setAdapter(mAdapter);
+                            }
+                        }, 3000);
+                    }
+                });
+
+
     }
 
     public ArrayList<String> getAllUserNames() {
@@ -424,6 +454,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getAllUsers() {
+        users = new ArrayList<>();
         mFirestore.collection("users")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {

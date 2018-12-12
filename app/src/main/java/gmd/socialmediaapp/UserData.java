@@ -33,6 +33,9 @@ public class UserData extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        LinkSet = null;
+        DateSet = null;
+
         itemPosition = 0;
 
         LinkSet = getIntent().getStringArrayListExtra("links");
