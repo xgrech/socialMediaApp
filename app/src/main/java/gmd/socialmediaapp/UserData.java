@@ -99,8 +99,6 @@ public class UserData extends AppCompatActivity {
                 if (itemPosition != 0) {
                     mRecyclerView.smoothScrollToPosition(itemPosition - 1);
                     itemPosition = itemPosition - 1;
-                    Toast.makeText(UserData.this, itemPosition.toString(), Toast.LENGTH_SHORT).show();
-
                 } else {
                     finish();
                 }
@@ -117,7 +115,6 @@ public class UserData extends AppCompatActivity {
             if ((e2.getY() < e1.getY()) && (e1.getY() - e2.getY() > 100)) {
                 mRecyclerView.smoothScrollToPosition(itemPosition + 1);
                 itemPosition = itemPosition + 1;
-                Toast.makeText(UserData.this, itemPosition.toString(), Toast.LENGTH_SHORT).show();
             }
 
             return super.onFling(e1, e2, velocityX, velocityY);

@@ -90,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
 
         loader = findViewById(R.id.loading);
 
-//        getAllPosts();
         getAllPosts1();
         getAllUsers();
 
@@ -106,8 +105,7 @@ public class MainActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    Toast.makeText(MainActivity.this, "Loading Data", Toast.LENGTH_SHORT).show();
-                } else {
+               } else {
                     openLoginScreen();
                 }
             }
@@ -330,23 +328,6 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void addPost(Post post) {
-        mFirestore.collection("posts")
-                .add(post)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        //TODO added successfully
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        //TODO failed to add
-                    }
-                });
-    }
-
     public void getAllPosts() {
         posts = new ArrayList<>();
         mFirestore.collection("posts")
@@ -359,8 +340,6 @@ public class MainActivity extends AppCompatActivity {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 posts.add(document.toObject(Post.class));
                             }
-                        } else {
-                            //TODO failed to load data
                         }
                     }
                 });
@@ -460,8 +439,6 @@ public class MainActivity extends AppCompatActivity {
                                 User user = document.toObject(User.class);
                                 users.add(user);
                             }
-                        } else {
-                            //TODO failed to load users message?
                         }
                     }
 
