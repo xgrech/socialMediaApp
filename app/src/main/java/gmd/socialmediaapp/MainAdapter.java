@@ -23,8 +23,10 @@ import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.firebase.Timestamp;
 import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import co.dift.ui.SwipeToAction;
@@ -54,7 +56,7 @@ class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.mTitle.setText(mPostSet.get(position).getUsername());
+        holder.mTitle.setText( getPrettyDate(mPostSet.get(position).getDate())  +" "+ mPostSet.get(position).getUsername());
 
         if(!mPostSet.get(position).getImageurl().isEmpty()) {
             holder.mView.setVisibility(View.VISIBLE);
@@ -109,5 +111,8 @@ class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
 
         }
     }
-
+    public String getPrettyDate(Timestamp timestamp) {
+        SimpleDateFormat sfd = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+        return sfd.format(timestamp.toDate());
+    }
 }
