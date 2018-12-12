@@ -97,37 +97,45 @@
 
 
     <Button
-        android:id="@+id/button"
-        android:layout_width="108dp"
-        android:layout_height="44dp"
+        android:id="@+id/upload"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginStart="248dp"
-        android:layout_marginTop="457dp"
+        android:layout_marginStart="304dp"
+        android:layout_marginTop="398dp"
         android:layout_marginEnd="18dp"
+        android:background="@drawable/upload"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/signOut"
+        android:layout_width="58dp"
+        android:layout_height="56dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="307dp"
+        android:layout_marginTop="482dp"
+        android:layout_marginEnd="19dp"
+        android:background="@drawable/shutdown"
         android:onClick="signout"
-        android:text="SingOut" />
+        android:visibility="visible" />
 
-    <!--<TextView-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:text="Main Activity"-->
-    <!--android:layout_centerInParent="true"-->
-    <!--android:textSize="25dp"-->
-    <!--android:textStyle="bold"-->
-    <!--android:fontFamily="casual"-->
-    <!--android:id="@+id/text"-->
-    <!--/>-->
+    <LinearLayout
+        android:id="@+id/loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/dark_blue"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="visible">
 
-    <!--<Button-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_centerHorizontal="true"-->
-    <!--android:layout_below="@id/text"-->
-    <!--android:text="Sign Out"-->
-    <!--android:textSize="20dp"-->
-    <!--android:onClick="signout"/>-->
+        <ProgressBar
+            android:layout_width="150dp"
+            android:layout_height="150dp" />
+    </LinearLayout>
 
 
 </RelativeLayout>

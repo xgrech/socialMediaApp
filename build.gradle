@@ -12,7 +12,7 @@ buildscript {
         maven { url 'https://google.bintray.com/exoplayer' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.0'
+        classpath 'com.android.tools.build:gradle:3.2.1'
 
         // Firebase implement
         classpath 'com.google.gms:google-services:4.0.1'

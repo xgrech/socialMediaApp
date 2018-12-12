@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -17,10 +18,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
+import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     TextView profileText;
 	TextView profileDate;
     TextView profileCount;
-    
+
     public RecyclerView mRecyclerView;
     public RecyclerView.LayoutManager mLayoutManager;
     public RecyclerView.Adapter mAdapter;
@@ -71,8 +75,12 @@ public class MainActivity extends AppCompatActivity {
     public ConstraintLayout profile_view;
     public int position;
     private static int RESULT_LOAD_IMG = 1;
-
+    public LinearLayout loader;
+    public ProgressBar progressBar;
     private Integer itemPosition;
+
+    private Button upload;
+    private Button signOut;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -83,18 +91,24 @@ public class MainActivity extends AppCompatActivity {
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirestore = FirebaseFirestore.getInstance();
 
+        loader = findViewById(R.id.loading);
+
         getAllPosts();
         getAllUsers();
 
         Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {public void run() {}}, 5000);
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                loader.setVisibility(View.GONE);
+            }
+        }, 5000);
 
         mAuthStateListner = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    Toast.makeText(MainActivity.this, "Welcome", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Loading Data", Toast.LENGTH_SHORT).show();
                 } else {
                     openLoginScreen();
                 }
@@ -129,6 +143,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        upload = findViewById(R.id.upload);
+
+        signOut = findViewById(R.id.signOut);
 
         handler.postDelayed(new Runnable() {
             public void run() {
@@ -198,9 +215,31 @@ public class MainActivity extends AppCompatActivity {
     class LearnGesture extends GestureDetector.SimpleOnGestureListener {
 
         @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        public boolean onDoubleTap(MotionEvent e) {
+            final Animation a = AnimationUtils.loadAnimation(MainActivity.this, R.anim.fui_slide_in_right);
+            a.reset();
 
+            signOut.setVisibility(View.VISIBLE);
+            upload.setVisibility(View.VISIBLE);
+            signOut.startAnimation(a);
+            upload.startAnimation(a);
+
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    signOut.setVisibility(View.INVISIBLE);
+                    upload.setVisibility(View.INVISIBLE);
+                }
+            }, 2000);
+
+            return super.onDoubleTap(e);
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             setLayoutAnimation_slideDown(profile_view);
+
+
             if ((e1.getY() < e2.getY()) && (e2.getY() - e1.getY() > 100)) {
                 int visibility = profile_view.getVisibility();
                 if (visibility == View.GONE)
@@ -233,7 +272,7 @@ public class MainActivity extends AppCompatActivity {
             profileDate.setText(getPrettyDate(userProfile.getDate()));
             profileCount = findViewById(R.id.profilPostCount);
             profileCount.setText(String.valueOf(userProfile.getNumberOfPosts()));
-            
+
             return super.onFling(e1, e2, velocityX, velocityY);
         }
     }
@@ -410,10 +449,10 @@ public class MainActivity extends AppCompatActivity {
 
                 });
     }
-    
-    public String getPrettyDate(Timestamp timestamp){		
-	        SimpleDateFormat sfd = new SimpleDateFormat("dd-MM-yyyy HH:mm");		
-	        return sfd.format(timestamp.toDate());		
+
+    public String getPrettyDate(Timestamp timestamp){
+	        SimpleDateFormat sfd = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+	        return sfd.format(timestamp.toDate());
 	    }
 }
 
