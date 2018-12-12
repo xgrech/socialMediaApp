@@ -231,24 +231,15 @@ public class Uploader extends AppCompatActivity {
             p = new Post(type, this.prefixServerUrl(imgUrl), "", this.auth.getCurrentUser().getDisplayName().toString(),Timestamp.now() ,this.auth.getCurrentUser().getUid().toString() );
 
         }
-        mFirestore.collection("posts")
-                .add(p)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        //TODO added successfully
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        //TODO failed to add
-                    }
-                });
+        mFirestore.collection("posts").add(p);
+        updateUserInsertCount(getIntent().getStringExtra("userId"),getIntent().getIntExtra("postCount", 0));
     }
 
     private String prefixServerUrl(String url) {
         return  this.serverUrl + url;
     }
 
+    public void updateUserInsertCount(String userId, int count) {
+        mFirestore.collection("users").document(userId).update("numberOfPosts", count + 1);
+    }
 }

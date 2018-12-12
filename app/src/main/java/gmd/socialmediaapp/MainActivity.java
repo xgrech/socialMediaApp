@@ -137,6 +137,8 @@ public class MainActivity extends AppCompatActivity {
         uploadButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent i = new Intent(v.getContext(), Uploader.class);
+                i.putExtra("userId", mFirebaseAuth.getCurrentUser().getUid());
+                i.putExtra("postCount", getCurrentUserPostCount( mFirebaseAuth.getCurrentUser().getUid()));
                 startActivity(i);
             }
         });
@@ -245,15 +247,12 @@ public class MainActivity extends AppCompatActivity {
             if ((e2.getX() < e1.getX()) && (e1.getX() - e2.getX() > 100)) {
                 mRecyclerView.smoothScrollToPosition(itemPosition + 1);
                 itemPosition = itemPosition + 1;
-                Toast.makeText(MainActivity.this, itemPosition.toString(), Toast.LENGTH_SHORT).show();
             }
 
             if ((e1.getX() < e2.getX()) && (e2.getX() - e1.getX() > 100)) {
                 if (itemPosition != 0) {
                     mRecyclerView.smoothScrollToPosition(itemPosition - 1);
                     itemPosition = itemPosition - 1;
-                    Toast.makeText(MainActivity.this, itemPosition.toString(), Toast.LENGTH_SHORT).show();
-
                 }
             }
 
@@ -437,10 +436,6 @@ public class MainActivity extends AppCompatActivity {
         }
         //empty user
         return new User();
-    }
-
-    public void updateUserInsertCount(String userId) {
-        mFirestore.collection("users").document(userId).update("numberOfPosts", getCurrentUserPostCount(userId) + 1);
     }
 
     public int getCurrentUserPostCount(String userId) {
