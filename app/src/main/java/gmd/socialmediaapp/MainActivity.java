@@ -6,12 +6,10 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.view.GestureDetectorCompat;
-import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,13 +20,11 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -44,12 +40,8 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import co.dift.ui.SwipeToAction;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -58,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     public FirebaseAuth.AuthStateListener mAuthStateListner;
 
     TextView profileText;
-	TextView profileDate;
+    TextView profileDate;
     TextView profileCount;
 
     public RecyclerView mRecyclerView;
@@ -78,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
     public LinearLayout loader;
     public ProgressBar progressBar;
     private Integer itemPosition;
+
+    private LinearLayout button_view;
 
     private Button upload;
     private Button signOut;
@@ -135,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
         };
 
         mRecyclerView.setLayoutManager(mLayoutManager);
-        Button uploadButton = (Button)findViewById(R.id.upload_button);
+        Button uploadButton = (Button) findViewById(R.id.upload_button);
         uploadButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent i = new Intent(v.getContext(), Uploader.class);
@@ -143,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        upload = findViewById(R.id.upload);
+        button_view = findViewById(R.id.button_layout);
 
         signOut = findViewById(R.id.signOut);
 
@@ -218,17 +212,15 @@ public class MainActivity extends AppCompatActivity {
         public boolean onDoubleTap(MotionEvent e) {
             final Animation a = AnimationUtils.loadAnimation(MainActivity.this, R.anim.fui_slide_in_right);
             a.reset();
+            button_view.setVisibility(View.VISIBLE);
 
-            signOut.setVisibility(View.VISIBLE);
-            upload.setVisibility(View.VISIBLE);
             signOut.startAnimation(a);
-            upload.startAnimation(a);
+            button_view.startAnimation(a);
 
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 public void run() {
-                    signOut.setVisibility(View.INVISIBLE);
-                    upload.setVisibility(View.INVISIBLE);
+                    button_view.setVisibility(View.GONE);
                 }
             }, 2000);
 
@@ -266,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             User userProfile = getUserProfile(posts.get(itemPosition).getUsername());
-            profileText = findViewById(R.id.profilName);
+            profileText = findViewById(R.id.profile_name);
             profileText.setText(userProfile.getUsername());
             profileDate = findViewById(R.id.profilDate);
             profileDate.setText(getPrettyDate(userProfile.getDate()));
@@ -450,9 +442,9 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    public String getPrettyDate(Timestamp timestamp){
-	        SimpleDateFormat sfd = new SimpleDateFormat("dd-MM-yyyy HH:mm");
-	        return sfd.format(timestamp.toDate());
-	    }
+    public String getPrettyDate(Timestamp timestamp) {
+        SimpleDateFormat sfd = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+        return sfd.format(timestamp.toDate());
+    }
 }
 

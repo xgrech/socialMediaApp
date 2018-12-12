@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_gravity="center"
+    android:background="@color/dark_blue"
     android:layout_height="match_parent">
 
 
@@ -8,20 +10,20 @@
         android:id="@+id/mainTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/browser_actions_bg_grey"
-        />
+        android:background="@color/dark_blue"
+        android:visibility="visible" />
 
     <ImageView
         android:id="@+id/imageView2"
-        android:layout_width="197dp"
-        android:layout_height="277dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:padding="10dp"
         android:visibility="visible"
     />
 
     <com.google.android.exoplayer2.ui.PlayerView
         android:id="@+id/videoView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </android.support.constraint.ConstraintLayout>
