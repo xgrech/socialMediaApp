@@ -5,6 +5,7 @@
     <color name="colorAccent">#D81B60</color>
     <color name="white">#FFFFFF</color>
     <color name="dark_blue">#0a1336</color>
+    <color name="soft_dark_blue">#0a2736</color>
     <color name="black">#000000</color>
     <color name="loading">#d3d6b1</color>
     <color name="orage">#E65100</color>
